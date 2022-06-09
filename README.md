@@ -30,3 +30,9 @@ $ csvcarve -f test.csv -p '#domain==\.eu' -a '1==yes'
 #domain,sending-spam,seen-before
 example.eu,yes,yes
 ```
+
+# Install
+
+```sh
+$ go install github.com/desdic/csvcarve/cmd/csvcarve@latest
+```
