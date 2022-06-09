@@ -2,13 +2,11 @@ package main
 
 import (
 	"bufio"
-	"encoding/csv"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"regexp"
-	"strings"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -47,7 +45,7 @@ func buildHeaders(row []string, patterns []Pattern) map[string]int {
 }
 
 func matchCSV(csvfile io.Reader, noHeader bool, patterns []Pattern, cells []Cell) {
-	csvReader := csv.NewReader(csvfile)
+	csvReader := NewReader(csvfile)
 	csvReader.LazyQuotes = true
 	csvReader.TrimLeadingSpace = true
 
@@ -72,7 +70,8 @@ func matchCSV(csvfile io.Reader, noHeader bool, patterns []Pattern, cells []Cell
 			gotHeader = true
 
 			headers = buildHeaders(row, patterns)
-			fmt.Printf("%s\n", strings.Join(row, ",")) //nolint:forbidigo
+
+			fmt.Printf("%s", csvReader.LastLine) //nolint:forbidigo
 
 			continue
 		}
@@ -92,7 +91,7 @@ func matchCSV(csvfile io.Reader, noHeader bool, patterns []Pattern, cells []Cell
 			continue
 		}
 
-		fmt.Printf("%s\n", strings.Join(row, ",")) //nolint:forbidigo
+		fmt.Printf("%s", csvReader.LastLine) //nolint:forbidigo
 	}
 }
 
@@ -146,7 +145,7 @@ func NewCommand() *cobra.Command {
 	c.Flags().StringVarP(&filename, "filename", "f", "", "")
 	c.Flags().StringArrayVarP(&filters, "filter", "p", []string{}, "")
 	c.Flags().StringArrayVarP(&cellfilters, "cell", "a", []string{}, "")
-	c.Flags().BoolVarP(&noHeader, "noheader", "n", false, "CSV has no header")
+	c.Flags().BoolVarP(&noHeader, "noheader", "n", false, "Don't treat first line as a header")
 
 	return c
 }
