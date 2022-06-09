@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/csv"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"regexp"
@@ -45,9 +45,11 @@ func buildHeaders(row []string, patterns []Pattern) map[string]int {
 }
 
 func matchCSV(csvfile io.Reader, noHeader bool, patterns []Pattern, cells []Cell) {
-	csvReader := NewReader(csvfile)
+	csvReader := csv.NewReader(csvfile)
 	csvReader.LazyQuotes = true
 	csvReader.TrimLeadingSpace = true
+
+	csvWriter := csv.NewWriter(os.Stdout)
 
 	gotHeader := false
 
@@ -71,7 +73,7 @@ func matchCSV(csvfile io.Reader, noHeader bool, patterns []Pattern, cells []Cell
 
 			headers = buildHeaders(row, patterns)
 
-			fmt.Printf("%s", csvReader.LastLine) //nolint:forbidigo
+			_ = csvWriter.Write(row)
 
 			continue
 		}
@@ -91,8 +93,9 @@ func matchCSV(csvfile io.Reader, noHeader bool, patterns []Pattern, cells []Cell
 			continue
 		}
 
-		fmt.Printf("%s", csvReader.LastLine) //nolint:forbidigo
+		_ = csvWriter.Write(row)
 	}
+	csvWriter.Flush()
 }
 
 func NewCommand() *cobra.Command {
