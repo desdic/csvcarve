@@ -1,5 +1,8 @@
 # Simple CSV carver/grep
 
+![build-test](https://github.com/desdic/csvcarve/actions/workflows/go.yml/badge.svg)
+
+
 Works on cells and headers using regex
 
 ```
